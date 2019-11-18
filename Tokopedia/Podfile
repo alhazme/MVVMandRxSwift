@@ -1,0 +1,26 @@
+# Uncomment the next line to define a global platform for your project
+# platform :ios, '9.0'
+
+target 'Tokopedia' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for Tokopedia
+  pod 'Alamofire', '~> 5.0.0-rc.3'
+  pod 'SwiftyJSON', '~> 4.0'
+  pod 'SDWebImage', '~> 5.0'
+  pod 'RangeSeekSlider'
+  pod 'RxSwift', '~> 5'
+  pod 'RxCocoa', '~> 5'
+  pod 'RxDataSources', '~> 4.0.1'
+
+  target 'TokopediaTests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+
+  target 'TokopediaUITests' do
+    # Pods for testing
+  end
+
+end
