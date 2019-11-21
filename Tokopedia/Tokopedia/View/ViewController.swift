@@ -19,23 +19,18 @@ class ViewController: UIViewController {
     // View Model
     private let viewModel = ReactiveProductViewModel()
     let disposeBag = DisposeBag()
-    
-    // Data
-    private var minPrice: Int = 100
-    private var maxPrice: Int = 10000000
-    private var wholeSale: Bool = false
-    private var shopTypes: [String] = []
-    private var official: Bool? = nil
-    private var fshop: Int? = nil
-    private var start: Int = 0
-    private var row = 10
-    private var products: [Product] = [Product]()
+    let viewWillAppearTrigger = PublishSubject<Void>()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         setupLayout()
         setupViewModel()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.viewWillAppearTrigger.onNext(())
     }
     
     func setupLayout() {
@@ -73,17 +68,18 @@ class ViewController: UIViewController {
         
         // Mark: INPUT
         let input = ReactiveProductViewModel.Input(
-            didLoadTrigger: .just(())
+            didLoadTrigger: .just(()),
+            willAppear: viewWillAppearTrigger.asObserver().asDriver(onErrorJustReturn: ())
         )
         
         // Mark: OUTPUT
         let output = viewModel.transform(input: input)
         output.productListCellData.drive(
-                collectionView.rx.items(
-                    cellIdentifier: ProductCollectionViewCell.reuseIdentifier, cellType: ProductCollectionViewCell.self
-                )
-            ) { row, model, cell in
-                cell.configureCell(with: model)
+            collectionView.rx.items(
+                cellIdentifier: ProductCollectionViewCell.reuseIdentifier, cellType: ProductCollectionViewCell.self
+            )
+        ) { row, model, cell in
+            cell.configureCell(with: model)
         }.disposed(by: disposeBag)
         
     }
@@ -96,7 +92,7 @@ class ViewController: UIViewController {
         viewModel.fshop = fshop
         viewModel.start = start
         viewModel.row = rows
-        print("fetchProducts")
+        
     }
 
     @IBAction func filterButtonAction(_ sender: Any) {
@@ -134,7 +130,6 @@ class ViewController: UIViewController {
 extension ViewController: FilterViewControllerDelegate {
     
     func filterProducts(_ minPrice: Int, maxPrice: Int, wholeSale: Bool, shopTypes: [String], official: Bool?, fshop: Int?, start: Int, rows: Int) {
-        print("filterProducts delegated")
         fetchProducts(minPrice, maxPrice: maxPrice, wholeSale: wholeSale, official: official, fshop: fshop, start: start, rows: rows)
     }
     

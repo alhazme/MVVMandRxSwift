@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 import RxCocoa
 import RxSwift
 
@@ -31,6 +32,7 @@ class ReactiveProductViewModel: ViewModelType {
     
     struct Input {
         let didLoadTrigger: Driver<Void>
+        let willAppear: Driver<Void>
     }
     
     struct Output {
@@ -39,7 +41,8 @@ class ReactiveProductViewModel: ViewModelType {
     
     func transform(input: Input) -> Output {
         
-        let fetchData = input.didLoadTrigger
+        let inputMerge = Driver.merge(input.didLoadTrigger, input.willAppear)
+        let fetchData = inputMerge
             .do(onNext: { _ in
                 
             })
